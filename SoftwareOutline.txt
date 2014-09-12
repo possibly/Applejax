@@ -1,0 +1,7 @@
+Client - C++/Java using SMFL
+
+Server - Ruby on Rails for Scaling
+       - PHP for handling XML Data
+       - Some other language ("feel free to suggest") like nodeJS to keep the actual sessions running
+
+In between - Compressor to compress and decompress XML Data sent from client to server :)
