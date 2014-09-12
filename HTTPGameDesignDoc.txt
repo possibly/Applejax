@@ -1,0 +1,61 @@
+Multiplayer, HTTP-based game
+
+Client applications can request limited information about the state of the simulation from the server
+Clients can send instructions to the server in the form of json packets
+
+The server will check these instructions for validity (including any predictable exploits e.g. knowing information about part of the game the player isn't supposed to see)
+and execute operations on the simulation
+
+********
+The Game
+********
+
+* The World
+
+The game takes place on an arbitrarily large grid such that there is sufficient space to allow a large number of turns.
+The world is populated by players and trees(placeholder)
+
+* The Goal
+
+Collect apples(placeholder) from trees and survive longer than other players.
+
+* The Rules
+
+Players eat one apple per turn.
+When one player is within one tile of another they can choose to try to steal the other player's apples, or to (by some process of quantum mechanics) share their apples to produce more apples for both of them.
+
+(Note: Maybe players should automatically interact when close to each other?)
+
+This is a prisoner's dilemma and the bimatrix looks like this.
+
+
+		    Share			  Steal
+		    -----------------------------------
+Share	| (0.25,  0.25)  | (-0.50, 1.50) |
+Steal	    | (1.50, -0.50)  | (-0.25, -0.25) |
+		    -----------------------------------
+			
+
+Therefore, both players come out better off if they both share, but a sharing player can be exploited by one who steals.
+This is counteracted by the penalty for both players trying to steal. They both lose 0.25 of their apples, meaning uncooperative players are penalized when interacting with other uncooperative players.
+
+* The Player
+
+The player can specify an action to perform at each "step" as well as to choose a strategy should they encounter another player.
+They player can also get certain "information" regarding the world and its state. For example, suppose a player can see a tree if it is two "tiles" away from them.  The player can define logic that deals with
+an encounter with a tree.
+Easiest expressed with an "if statement"
+
+if (Player.canSee(tree)) {
+	for (Tree tree : Player.getVisibleTrees()) {
+		//pick apples? wait for an opportunity to steal fresh apples from an unassuming individual? Sky's the limit.
+	}
+}
+
+* The Architecture (WIP)
+
+
+
+***********
+ALL NUMERICAL QUANTITIES AND FORMULAS ARE SUBJECT TO CHANGE
+***********
