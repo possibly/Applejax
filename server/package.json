@@ -1,0 +1,22 @@
+{
+  "name": "localhost",
+  "version": "1.0.0",
+  "description": "Collection of node packages for the Applejax server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/possibly/Applejax.git"
+  },
+  "author": "Paul Kassianik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/possibly/Applejax/issues"
+  },
+  "homepage": "https://github.com/possibly/Applejax#readme",
+  "dependencies": {
+    "express": "^4.13.1"
+  }
+}

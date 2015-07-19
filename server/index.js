@@ -1,8 +1,13 @@
 // main file for NodeJS implementation
-var http = require("http");
+var express = require('express');
+var app = express();
 
-http.createServer(function(request, response) {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  response.write("<html><head><title>Hi</title></head><body><b>Hi There?</b></body></html>");
-  response.end();
-}).listen(80);
+app.get('/', function(req, res) {
+	res.send("Hello World!");
+});
+
+var server = app.listen(3000, function() {
+	var host = server.address().address;
+	var port = server.address().port;
+	console.log("Someone accessed the server at http://%s:%s", host, port);
+});
