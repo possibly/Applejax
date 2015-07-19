@@ -1,7 +1,6 @@
-Client - C++/Java using SMFL
+Client - Java Command Line (for now)
+       - get Data from server through sockets	
 
-Server - Ruby on Rails for Scaling
-       - PHP for handling XML Data
-       - Some other language ("feel free to suggest") like nodeJS to keep the actual sessions running
+Server - Node JS (simple)
+       - Data stored in a dynamic sql database
 
-In between - Compressor to compress and decompress XML Data sent from client to server :)
