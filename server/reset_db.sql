@@ -6,10 +6,11 @@
 #    where <user_name> is the name of the user who can create databases in your mysql installation
 # 2. Enter your mysql password
 
-
+DROP DATABASE IF EXISTS applejax_db;
 CREATE DATABASE IF NOT EXISTS applejax_db;
 USE applejax_db;
-CREATE TABLE IF NOT EXISTS sessions(session_id INT auto_increment, board_length INT, board_width INT, PRIMARY KEY (session_id));
+CREATE TABLE IF NOT EXISTS sessions(session_id INT auto_increment, board_length INT, board_width INT, player_limit INT, 
+	PRIMARY KEY (session_id));
 CREATE TABLE IF NOT EXISTS clients(client_id INT auto_increment, apples INT, coordinates_x INT, coordinates_y INT,
 	session_id INT, primary key (client_id), foreign key (session_id) references sessions(session_id));
 CREATE TABLE IF NOT EXISTS trees(tree_id INT auto_increment, coordinates_x INT, coordinate_y INT, session_id INT,
