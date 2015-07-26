@@ -18,6 +18,9 @@ function makeString(parameter) {
 var board_length = 20;
 var board_width = 20;
 var player_limit = 5;
+var default_x = Math.floor(board_width/2);
+var default_y = Math.floor(board_length/2);
+var default_apples = 5;
 // =============================================================
 
 app.get('/', function(req, res) {
@@ -25,14 +28,23 @@ app.get('/', function(req, res) {
 });
 
 app.get('/getInfoForNewClient', function(req, res) {
-	connection.connect();
 	connection.query("CALL count_free_sessions();", function(err, rows, fields) {
 		if (err) throw err;
 		function returnInfo() {
 			connection.query("CALL get_free_session();", function(err, row, fields) {
 				if (err) throw err;
-				res.sendStatus(makeString(row[0][0].session_id));
-				connection.end();
+				var session_id = row[0][0].session_id;
+				//res.sendStatus(makeString(session_id));
+				function giveClientId() {
+					connection.query("CALL add_client_to_session(?,?,?,?);",
+						[session_id,default_x,default_y,default_apples],
+						function(err, rows, fields) {
+							if (err) throw err;
+							res.sendStatus(rows[0][0].client_id);
+							console.log("connection ended");
+						});
+				}
+				giveClientId();
 			});
 		}
 		if (rows[0][0].result==0) {
