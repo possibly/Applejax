@@ -18,3 +18,4 @@ CREATE TABLE IF NOT EXISTS trees(tree_id INT auto_increment, coordinates_x INT, 
 	foreign key (session_id) references sessions(session_id));
 CREATE TABLE IF NOT EXISTS cooldown_trees(tree_id INT, cooldown_end DATETIME,
 	foreign key (tree_id) references trees(tree_id));
+
