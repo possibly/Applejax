@@ -18,7 +18,7 @@ BEGIN
 	ORDER BY (
 		SELECT count(client_id)
 		FROM clients AS client_table
-		WHERE client_table.session_id = session_table.session_id
+		WHERE client_table.session_id = session_id
 	); 
 END$$
 	

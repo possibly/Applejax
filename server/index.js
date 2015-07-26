@@ -9,17 +9,40 @@ var connection = mysql.createConnection({
 	database: 'applejax_db'
 });
 
+// The following parameters should be later put in a config file
+// =============================================================
+var board_length = 20;
+var board_width = 20;
+var player_limit = 5;
+// =============================================================
+
 app.get('/', function(req, res) {
 	res.send("Hello World!");
 });
 
 app.get('/getInfoForNewClient', function(req, res) {
 	connection.connect();
-	connection.query("SELECT 1+1 AS solution", function(err, rows, fields) {
-		//if (err) throw err;
-		res.sendStatus(rows[0].solution);
+	connection.query("CALL count_free_sessions();", function(err, rows, fields) {
+		if (err) throw err;
+		function returnInfo() {
+			connection.query("CALL get_free_session();", function(err, row, fields) {
+				if (err) throw err;
+				res.sendStatus(makeString(row[0][0].session_id));
+				connection.end();
+			});
+		}
+		if (rows[0][0].result==0) {
+			connection.query("CALL add_session("+board_length+","+board_width+","+player_limit+")",
+			function(err, rows, fields) {
+				if (err) throw err;
+				returnInfo();
+			} );
+			
+		} else {
+			returnInfo();
+		}
 	});
-	connection.end();	
+	
 });
 
 var server = app.listen(3000, function() {
