@@ -9,6 +9,10 @@ var connection = mysql.createConnection({
 	database: 'applejax_db'
 });
 
+function makeString(parameter) {
+	return parameter+""
+}
+
 // The following parameters should be later put in a config file
 // =============================================================
 var board_length = 20;
@@ -32,7 +36,7 @@ app.get('/getInfoForNewClient', function(req, res) {
 			});
 		}
 		if (rows[0][0].result==0) {
-			connection.query("CALL add_session("+board_length+","+board_width+","+player_limit+")",
+			connection.query("CALL add_session(?,?,?)", [board_length, board_width, player_limit],
 			function(err, rows, fields) {
 				if (err) throw err;
 				returnInfo();
