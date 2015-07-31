@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>So Long!</title>
+		<title>Lololol</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script>if (typeof jQuery === 'undefined') {
+		  document.write(unescape('%3Cscript%20src%3D%22/path/to/your/scripts/jquery-2.1.4.min.js%22%3E%3C/script%3E'));
+	  }
+		</script>
+		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	</head>
 	<body>
-		
+		<script>
+		var socket = io();
+		socket.on('user_info', function(info) {
+			$("#main_div").html(info)
+		});
+		</script>
+		<div id="main_div"></div>
 	</body>
 </html>

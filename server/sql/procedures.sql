@@ -91,3 +91,10 @@ BEGIN
 	AND (coordinates_x = v_temp_coords_x)
 	AND (coordinates_y = v_temp_coords_y);
 END$$
+
+DROP PROCEDURE IF EXISTS remove_client$$
+CREATE PROCEDURE remove_client(v_client_id INT) 
+BEGIN
+	DELETE FROM clients
+	WHERE client_id = v_client_id; 
+END$$

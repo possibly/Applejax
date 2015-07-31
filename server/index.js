@@ -1,17 +1,20 @@
 // main file for NodeJS implementation
 var express = require('express');
-var mysql = require('mysql');
 var app = express();
+var mysql = require('mysql');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var connection = mysql.createConnection({
 	host: 'localhost',
-	user: 'root',
-	password: 'Seraphima1',
+	user: 'sample_user',
+	password: 'sample_password',
 	database: 'applejax_db'
 });
 
 function makeString(parameter) {
 	return parameter+""
 }
+
 
 // The following parameters should be later put in a config file
 // =============================================================
@@ -24,26 +27,28 @@ var default_apples = 5;
 // =============================================================
 
 app.get('/', function(req, res) {
-	res.send("Hello World!");
+	res.sendFile(__dirname+"/static_pages/index.html")
 });
 
-app.get('/getInfoForNewClient', function(req, res) {
+io.on('connect', function(socket) {
+	var user_info = []
 	connection.query("CALL count_free_sessions();", function(err, rows, fields) {
 		if (err) throw err;
 		function returnInfo() {
 			connection.query("CALL get_free_session();", function(err, row, fields) {
 				if (err) throw err;
-				var session_id = row[0][0].session_id;
-				//res.sendStatus(makeString(session_id));
+				user_info["session_id"] = row[0][0].session_id;
+				//console.log(session_id);
 				function giveClientId() {
 					connection.query("CALL add_client_to_session(?,?,?,?);",
-						[session_id,default_x,default_y,default_apples],
+						[user_info["session_id"],default_x,default_y,default_apples],
 						function(err, rows, fields) {
 							if (err) throw err;
-							res.sendStatus(rows[0][0].client_id);
-							console.log("connection ended");
+							user_info["client_id"] = rows[0][0].client_id;
+							sendBackInfo(socket, user_info, ["session_id", "client_id"], 'user_info')
 						});
 				}
+				
 				giveClientId();
 			});
 		}
@@ -59,10 +64,24 @@ app.get('/getInfoForNewClient', function(req, res) {
 		}
 	});
 	
+	socket.on('disconnect', function() {
+		connection.query("CALL remove_client(?)", [user_info["session_id"]], 
+			function(err) {
+				if (err) throw err;
+			})
+	});
 });
 
-var server = app.listen(3000, function() {
-	var host = server.address().address;
-	var port = server.address().port;
-	console.log("Someone accessed the server at http://%s:%s", host, port);
+function sendBackInfo(socket, hash, keys, event_name) {
+	var result = {}
+	for (i=0; i<keys.length; i++) {
+		//console.log(keys[i]+" "+hash[keys[i]])
+		var key = keys[i]
+		result[key] = hash[key]
+	}
+	socket.emit(event_name, JSON.stringify(result))
+}
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
 });
