@@ -1,0 +1,6 @@
+{
+	"board_length": 20,
+	"board_width": 20,
+	"player_limit": 5,
+	"default_apples": 5
+}

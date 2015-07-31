@@ -4,6 +4,7 @@ var app = express();
 var mysql = require('mysql');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var configs = require("./configs")
 var connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'sample_user',
@@ -18,12 +19,12 @@ function makeString(parameter) {
 
 // The following parameters should be later put in a config file
 // =============================================================
-var board_length = 20;
-var board_width = 20;
-var player_limit = 5;
+var board_length = configs.get("board_length")
+var board_width = configs.get("board_width")
+var player_limit = configs.get("player_limit")
+var default_apples = configs.get("default_apples")
 var default_x = Math.floor(board_width/2);
 var default_y = Math.floor(board_length/2);
-var default_apples = 5;
 // =============================================================
 
 app.get('/', function(req, res) {
@@ -65,7 +66,7 @@ io.on('connect', function(socket) {
 	});
 	
 	socket.on('disconnect', function() {
-		connection.query("CALL remove_client(?)", [user_info["session_id"]], 
+		connection.query("CALL remove_client(?)", [user_info["client_id"]], 
 			function(err) {
 				if (err) throw err;
 			})
