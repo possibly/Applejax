@@ -1,10 +1,11 @@
 // main file for NodeJS implementation
 var express = require('express');
 var app = express();
-var mysql = require('mysql');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var configs = require("./configs")
+var sqlHandler = require("./sql_handler")
+var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host: 'localhost',
 	user: 'sample_user',
@@ -33,40 +34,13 @@ app.get('/', function(req, res) {
 
 io.on('connect', function(socket) {
 	var user_info = []
-	connection.query("CALL count_free_sessions();", function(err, rows, fields) {
-		if (err) throw err;
-		function returnInfo() {
-			connection.query("CALL get_free_session();", function(err, row, fields) {
-				if (err) throw err;
-				user_info["session_id"] = row[0][0].session_id;
-				//console.log(session_id);
-				function giveClientId() {
-					connection.query("CALL add_client_to_session(?,?,?,?);",
-						[user_info["session_id"],default_x,default_y,default_apples],
-						function(err, rows, fields) {
-							if (err) throw err;
-							user_info["client_id"] = rows[0][0].client_id;
-							sendBackInfo(socket, user_info, ["session_id", "client_id"], 'user_info')
-						});
-				}
-				
-				giveClientId();
-			});
-		}
-		if (rows[0][0].result==0) {
-			connection.query("CALL add_session(?,?,?)", [board_length, board_width, player_limit],
-			function(err, rows, fields) {
-				if (err) throw err;
-				returnInfo();
-			} );
-			
-		} else {
-			returnInfo();
-		}
-	});
-	
+	sqlHandler.report_back_info(function(reported_shit) {
+		user_info = reported_shit // FUCK YEAH!
+		sendBackInfo(socket, user_info, ["session_id", "client_id"], 'user_info')
+	})
+
 	socket.on('disconnect', function() {
-		connection.query("CALL remove_client(?)", [user_info["client_id"]], 
+		connection.query("CALL remove_client(?)", [user_info["client_id"]],
 			function(err) {
 				if (err) throw err;
 			})
