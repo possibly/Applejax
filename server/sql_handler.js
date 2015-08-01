@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
 });
 
 module.exports = {
-	report_back_info: function(callback) {
+	reportBackInfo: function(callback) {
 		
 		makeQuery("CALL count_free_sessions();", function(err, rows, fields) {
 			var user_info = []
@@ -38,6 +38,12 @@ module.exports = {
 			} else {
 				returnInfo();
 			}
+		});
+	},
+	
+	removeClient: function(client_id) {
+		makeQuery("CALL remove_client(?);", [client_id], function(err) {
+			if (err) throw err;
 		});
 	}
 }

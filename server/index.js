@@ -5,13 +5,6 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var configs = require("./configs")
 var sqlHandler = require("./sql_handler")
-var mysql = require('mysql');
-var connection = mysql.createConnection({
-	host: 'localhost',
-	user: 'sample_user',
-	password: 'sample_password',
-	database: 'applejax_db'
-});
 
 function makeString(parameter) {
 	return parameter+""
@@ -34,23 +27,20 @@ app.get('/', function(req, res) {
 
 io.on('connect', function(socket) {
 	var user_info = []
-	sqlHandler.report_back_info(function(reported_shit) {
+	sqlHandler.reportBackInfo(function(reported_shit) {
 		user_info = reported_shit // FUCK YEAH!
 		sendBackInfo(socket, user_info, ["session_id", "client_id"], 'user_info')
+		socket.join("session#"+user_info["session_id"])
 	})
 
 	socket.on('disconnect', function() {
-		connection.query("CALL remove_client(?)", [user_info["client_id"]],
-			function(err) {
-				if (err) throw err;
-			})
+		sqlHandler.removeClient(user_info["client_id"])
 	});
 });
 
 function sendBackInfo(socket, hash, keys, event_name) {
 	var result = {}
 	for (i=0; i<keys.length; i++) {
-		//console.log(keys[i]+" "+hash[keys[i]])
 		var key = keys[i]
 		result[key] = hash[key]
 	}
