@@ -70,7 +70,7 @@ BEGIN
 	);
 	SET v_temp_coords_x = v_coords_x;
 	SET v_temp_coords_y = v_coords_y;
-	WHILE (does_client_exist(v_session_id, v_temp_coords_x, v_temp_coords_y) > 0 AND (
+	WHILE (does_client_exist(v_session_id, v_temp_coords_x, v_temp_coords_y) != 0 OR (
 		SELECT count(*)
 		FROM trees
 		WHERE session_id = v_session_id
@@ -110,4 +110,33 @@ CREATE PROCEDURE add_tree(v_session_id INT, v_x INT, v_y INT, v_apples INT)
 BEGIN
 	INSERT INTO trees(coordinates_x, coordinates_y, session_id, apples)
 	VALUES (v_x, v_y, session_id, v_apples);
+END$$
+
+DROP PROCEDURE IF EXISTS get_client_coordinates$$
+CREATE PROCEDURE get_client_coordinates(v_client_id INT) 
+BEGIN
+	SELECT coordinates_x, coordinates_y
+	FROM clients
+	WHERE client_id = v_client_id;
+END$$
+
+DROP PROCEDURE IF EXISTS get_clients_in_range$$
+CREATE PROCEDURE get_clients_in_range(v_session_id INT, v_client_id INT, v_x INT, v_y INT, v_range INT)
+BEGIN
+	SELECT client_id, (coordinates_x - v_x) as relational_x, (coordinates_y - v_y) as relational_y
+	FROM clients
+	WHERE (session_id = v_session_id)
+	AND (ABS(coordinates_x-v_x)<=v_range) 
+	AND (ABS(coordinates_x-v_y)<=v_range)
+	AND NOT (client_id = v_client_id);
+END$$
+
+DROP PROCEDURE IF EXISTS get_trees_in_range$$
+CREATE PROCEDURE get_trees_in_range(v_session_id INT, v_x INT, v_y INT, v_range INT)
+BEGIN
+	SELECT tree_id, (coordinates_x - v_x) as relational_x, (coordinates_y - v_y) as relational_y
+	FROM trees
+	WHERE (session_id = v_session_id)
+	AND (ABS(coordinates_x-v_x)<=v_range) 
+	AND (ABS(coordinates_x-v_y)<=v_range);
 END$$

@@ -6,6 +6,7 @@ var io = require('socket.io')(http);
 var configs = require("./configs")
 var sqlHandler = require("./sql_handler")
 var timerHandler = require("./timerHandler")
+var eventQue = require("./eventQue")
 
 var rooms = []
 var timers = []
@@ -24,6 +25,7 @@ var default_apples = configs.get("default_apples")
 var tree_number = configs.get("tree_number")
 var def_tree_apples = configs.get("def_tree_apples")
 var def_turn_time = configs.get("def_turn_time")
+var max_visibility = configs.get("max_visibility")
 var default_x = Math.floor(board_width/2);
 var default_y = Math.floor(board_length/2);
 // =============================================================
@@ -44,8 +46,14 @@ io.on('connect', function(socket) {
 				function(time) {
 					io.to(room_name).emit('time left', Math.round(time.ms/1000))
 				},
-				function() {
-					console.log("done")
+				function(timer) {
+					var l = new eventQue()
+					getObjectsAroundClient(user_info["client_id"], user_info["session_id"], function(json) {
+						console.log(json)
+						socket.emit('board update', json)
+						timer.reset(10000)
+						timer.start()
+					})
 				})
 			temp_timer.start()
 			timers.push(temp_timer)
@@ -66,6 +74,29 @@ function sendBackInfo(socket, hash, keys, event_name) {
 		result[key] = hash[key]
 	}
 	socket.emit(event_name, JSON.stringify(result))
+}
+
+function getObjectsAroundClient(v_client_id, v_session_id, callback) {
+	var returnJson = { clients: [], trees: [] }
+	sqlHandler.getClientsAroundClient(v_client_id, v_session_id, max_visibility, function(array) {
+		for (i=0; i<array.length; i++) {
+			var temp_json = {}
+			temp_json["client_id"] = array[i][0]
+			temp_json["rel_x"] = array[i][1]
+			temp_json["rel_y"] = array[i][2]
+			returnJson["clients"].push(temp_json)
+		}
+		sqlHandler.getTreesAroundClient(v_client_id, v_session_id, max_visibility, function(array) {
+			for (i=0; i<array.length; i++) {
+				var temp_json = {}
+				temp_json["tree_id"] = array[i][0]
+				temp_json["rel_x"] = array[i][1]
+				temp_json["rel_y"] = array[i][2]
+				returnJson["trees"].push(temp_json)
+			}
+			callback(returnJson)
+		})
+	})
 }
 
 function populateWithTrees(v_session_id) {

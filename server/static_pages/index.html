@@ -18,8 +18,13 @@
 		socket.on('time left', function(secs_left) {
 			$("#time_left").html(secs_left)
 		});
+		socket.on('board update', function(board) {
+			alert(JSON.stringify(board))
+			$("#board").html(JSON.stringify(board))
+		});
 		</script>
 		<div id="main_div"></div>
 		<div id="time_left"></div>
+		<div id="board"></div>
 	</body>
 </html>

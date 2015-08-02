@@ -11,9 +11,7 @@ module.exports = {
 	
 		timer.on('time', timeCallback);
 		timer.on('done', function(){
-			timer.reset()
-			doneCallback()
-			timer.start()
+			doneCallback(timer)
 		});
 	
 		return timer

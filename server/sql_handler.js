@@ -51,6 +51,40 @@ module.exports = {
 		makeQuery("CALL add_tree(?, ?, ?, ?)", [v_session_id, v_x, v_y, v_apples], function(err) {
 			if (err) throw err;
 		});
+	},
+	
+	getClientsAroundClient: function(v_client_id, v_session_id, range, callback) {
+		makeQuery("CALL get_client_coordinates(?);", [v_client_id], function(err, rows, fields) {
+			if (err) throw err;
+			var coordinates_x = rows[0][0].coordinates_x
+			var coordinates_y = rows[0][0].coordinates_y
+			makeQuery("CALL get_clients_in_range(?, ?, ?, ?, ?);", [v_session_id, v_client_id, coordinates_x, coordinates_y, range], function(err, rows, fields){
+				if (err) throw err;
+				var return_array = []
+				for (i=0; i<rows[0].length; i++) {
+					var row = rows[0][i]
+					return_array.push([row.client_id, row.relational_x, row.relational_y])
+				}
+				callback(return_array)
+			})
+		})
+	},
+	
+	getTreesAroundClient: function(v_client_id, v_session_id, range, callback) {
+		makeQuery("CALL get_client_coordinates(?);", [v_client_id], function(err, rows, fields) {
+			if (err) throw err;
+			var coordinates_x = rows[0][0].coordinates_x
+			var coordinates_y = rows[0][0].coordinates_y
+			makeQuery("CALL get_trees_in_range(?, ?, ?, ?);", [v_session_id, coordinates_x, coordinates_y, range], function(err, rows, fields) {
+				if (err) throw err;
+				var return_array = []
+				for (i=0; i<rows[0].length; i++) {
+					var row = rows[0][i]
+					return_array.push([row.tree_id, row.relational_x, row.relational_y])
+				}
+				callback(return_array)
+			})
+		})
 	}
 }
 

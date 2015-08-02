@@ -5,5 +5,6 @@
 	"default_apples": 5,
 	"tree_number": 5,
 	"def_tree_apples": 10,
-	"def_turn_time": 10000
+	"def_turn_time": 10000,
+	"max_visibility": 1
 }
