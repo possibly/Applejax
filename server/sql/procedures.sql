@@ -70,7 +70,13 @@ BEGIN
 	);
 	SET v_temp_coords_x = v_coords_x;
 	SET v_temp_coords_y = v_coords_y;
-	WHILE does_client_exist(v_session_id, v_temp_coords_x, v_temp_coords_y) > 0 DO 
+	WHILE (does_client_exist(v_session_id, v_temp_coords_x, v_temp_coords_y) > 0 AND (
+		SELECT count(*)
+		FROM trees
+		WHERE session_id = v_session_id
+		AND coordinates_x = v_temp_coords_x
+		AND coordinates_y = v_temp_coords_y
+	) != 0) DO 
 		IF (v_temp_coords_x = (v_max_x-1)) THEN
 			SET v_temp_coords_x = 0;
 		ELSE 
@@ -97,4 +103,11 @@ CREATE PROCEDURE remove_client(v_client_id INT)
 BEGIN
 	DELETE FROM clients
 	WHERE client_id = v_client_id; 
+END$$
+
+DROP PROCEDURE IF EXISTS add_tree$$
+CREATE PROCEDURE add_tree(v_session_id INT, v_x INT, v_y INT, v_apples INT)
+BEGIN
+	INSERT INTO trees(coordinates_x, coordinates_y, session_id, apples)
+	VALUES (v_x, v_y, session_id, v_apples);
 END$$

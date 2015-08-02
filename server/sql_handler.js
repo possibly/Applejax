@@ -45,6 +45,12 @@ module.exports = {
 		makeQuery("CALL remove_client(?);", [client_id], function(err) {
 			if (err) throw err;
 		});
+	},
+	
+	addTree: function(v_session_id, v_x, v_y, v_apples) {
+		makeQuery("CALL add_tree(?, ?, ?, ?)", [v_session_id, v_x, v_y, v_apples], function(err) {
+			if (err) throw err;
+		});
 	}
 }
 

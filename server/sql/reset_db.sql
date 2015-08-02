@@ -13,9 +13,7 @@ CREATE TABLE IF NOT EXISTS sessions(session_id INT auto_increment, board_length 
 	PRIMARY KEY (session_id));
 CREATE TABLE IF NOT EXISTS clients(client_id INT auto_increment, apples INT, coordinates_x INT, coordinates_y INT,
 	session_id INT, primary key (client_id), foreign key (session_id) references sessions(session_id));
-CREATE TABLE IF NOT EXISTS trees(tree_id INT auto_increment, coordinates_x INT, coordinate_y INT, session_id INT,
+CREATE TABLE IF NOT EXISTS trees(tree_id INT auto_increment, coordinates_x INT, coordinates_y INT, session_id INT, apples INT,
 	primary key (tree_id),
 	foreign key (session_id) references sessions(session_id));
-CREATE TABLE IF NOT EXISTS cooldown_trees(tree_id INT, cooldown_end DATETIME,
-	foreign key (tree_id) references trees(tree_id));
 
