@@ -6,12 +6,11 @@ module.exports = {
 		var options = {
 			"refreshRateMS": refreshRate
 		}
-		console.log(options)
 		var timer = new timer_module(time, options);
 	
 		timer.on('time', timeCallback);
 		timer.on('done', function(){
-			doneCallback(timer)
+			doneCallback()
 		});
 	
 		return timer

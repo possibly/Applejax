@@ -10,6 +10,7 @@ var eventQue = require("./eventQue")
 
 var rooms = []
 var timers = []
+var clients = []
 
 function makeString(parameter) {
 	return parameter+""
@@ -38,6 +39,7 @@ io.on('connect', function(socket) {
 	var user_info = []
 	sqlHandler.reportBackInfo(function(reported_shit) {
 		user_info = reported_shit // FUCK YEAH!
+		clients.push([socket.id, user_info["client_id"]])
 		sendBackInfo(socket, user_info, ["session_id", "client_id"], 'user_info')
 		var room_name = "session#"+user_info["session_id"]
 		if (rooms.indexOf(room_name)==-1) {
@@ -46,23 +48,50 @@ io.on('connect', function(socket) {
 				function(time) {
 					io.to(room_name).emit('time left', Math.round(time.ms/1000))
 				},
-				function(timer) {
+				function() {
+					timers[""+user_info["session_id"]].reset(def_turn_time)
+					timers[""+user_info["session_id"]].startstop()
 					var l = new eventQue()
-					getObjectsAroundClient(user_info["client_id"], user_info["session_id"], function(json) {
-						console.log(json)
-						socket.emit('board update', json)
-						timer.reset(10000)
-						timer.start()
-					})
+					var session_id = user_info["session_id"]
+					var room_name = "session#"+session_id
+					var clients_in_room = io.sockets.adapter.rooms[room_name]
+					var connectedSockets = []
+					for (var clientId in clients_in_room) {
+						var client_socket = io.sockets.connected[clientId]
+						connectedSockets.push(client_socket)
+					}
+					for (i=0; i<connectedSockets.length; i++){
+						var client_id 
+						var connectedSocket
+						for (l=0; l<clients.length; l++) {
+							//console.log(clients[l][0]+"\n"+connectedSockets[i].id)
+							if (clients[l][0] == connectedSockets[i].id) {
+								client_id = clients[l][1]
+								connectedSocket = connectedSockets[i]
+								break
+							}
+						}
+						//console.log(client_id)
+						getObjectsAroundClient(client_id, session_id, connectedSocket, function(json, socket) {
+							socket.emit('board update', json)
+						})
+					}
+					//console.log(timers[""+user_info["session_id"]])
 				})
 			temp_timer.start()
-			timers.push(temp_timer)
+			timers[""+user_info["session_id"]] = (temp_timer)
 			populateWithTrees(user_info["session_id"])
 		}
 		socket.join(room_name)
 	})
 
 	socket.on('disconnect', function() {
+		for (i=0; i<clients.length; i++) {
+			if (clients[i][1] == user_info["client_id"]) {
+				clients.splice(i,1)
+				break
+			}
+		}
 		sqlHandler.removeClient(user_info["client_id"])
 	});
 });
@@ -76,7 +105,7 @@ function sendBackInfo(socket, hash, keys, event_name) {
 	socket.emit(event_name, JSON.stringify(result))
 }
 
-function getObjectsAroundClient(v_client_id, v_session_id, callback) {
+function getObjectsAroundClient(v_client_id, v_session_id, v_socket, callback) {
 	var returnJson = { clients: [], trees: [] }
 	sqlHandler.getClientsAroundClient(v_client_id, v_session_id, max_visibility, function(array) {
 		for (i=0; i<array.length; i++) {
@@ -94,7 +123,7 @@ function getObjectsAroundClient(v_client_id, v_session_id, callback) {
 				temp_json["rel_y"] = array[i][2]
 				returnJson["trees"].push(temp_json)
 			}
-			callback(returnJson)
+			callback(returnJson, v_socket)
 		})
 	})
 }

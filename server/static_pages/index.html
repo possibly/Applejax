@@ -19,7 +19,6 @@
 			$("#time_left").html(secs_left)
 		});
 		socket.on('board update', function(board) {
-			alert(JSON.stringify(board))
 			$("#board").html(JSON.stringify(board))
 		});
 		</script>
