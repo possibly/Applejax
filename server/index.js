@@ -134,6 +134,7 @@ function populateWithTrees(v_session_id) {
 		var random_y = Math.floor((Math.random()*Math.pow(10, (1+Math.floor(Math.log10(board_length)))))%20)
 		var random_x = Math.floor((Math.random()*Math.pow(10, (1+Math.floor(Math.log10(board_width)))))%20)
 		if (existing_trees.indexOf([random_x, random_y]) == -1) {
+			//console.log("("+random_x+","+random_y+")")
 			sqlHandler.addTree(v_session_id, random_x, random_y, def_tree_apples)
 			existing_trees.push([random_x, random_y])
 		} else {

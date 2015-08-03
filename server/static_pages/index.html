@@ -8,6 +8,10 @@
 	  }
 		</script>
 		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<style>
+		table {width: 30%; table-layout: fixed;}
+		td {border: 1px solid black; height: 100px; text-align: center;}
+		</style>
 	</head>
 	<body>
 		<script>
@@ -19,11 +23,39 @@
 			$("#time_left").html(secs_left)
 		});
 		socket.on('board update', function(board) {
-			$("#board").html(JSON.stringify(board))
+			$("#00").html("You")
+			for (var i=0; i<board.clients.length; i++) {
+				var client = board.clients[i]
+				var idString = client.rel_x+""+client.rel_y
+				$("#"+idString).html("C")
+			}
+			for (var i=0; i<board.trees.length; i++) {
+				var tree = board.tree[i]
+				var idString = tree.rel_x+""+tree.rel_y
+				$("#"+idString).html("T")
+			}
 		});
 		</script>
 		<div id="main_div"></div>
 		<div id="time_left"></div>
-		<div id="board"></div>
+		<div id="board">
+			<table>
+				<tr>
+					<td id="1-1"></td>
+					<td id="10"></td>
+					<td id="11"></td>
+				</tr>
+				<tr>
+					<td id="0-1"></td>
+					<td id="00"></td>
+					<td id="01"></td>
+				</tr>
+				<tr>
+					<td id="-1-1"></td>
+					<td id="-10"></td>
+					<td id="-11"></td>
+				</tr>
+			</table>
+		</div>
 	</body>
 </html>
