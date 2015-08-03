@@ -23,6 +23,11 @@
 			$("#time_left").html(secs_left)
 		});
 		socket.on('board update', function(board) {
+			for (var i=-1; i<2; i++) {
+				for (var l=-1; l<2; l++) {
+					$("#"+i+l).html("")
+				}
+			}
 			$("#00").html("You")
 			for (var i=0; i<board.clients.length; i++) {
 				var client = board.clients[i]
