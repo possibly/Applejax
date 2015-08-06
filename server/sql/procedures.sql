@@ -140,3 +140,11 @@ BEGIN
 	AND (ABS(coordinates_x-v_x)<=v_range) 
 	AND (ABS(coordinates_x-v_y)<=v_range);
 END$$
+
+DROP PROCEDURE IF EXISTS set_client_coordinates$$
+CREATE PROCEDURE set_client_coordinates(v_client_id INT, v_new_x INT, v_new_y INT)
+BEGIN
+	UPDATE clients
+	SET coordinates_x = v_new_x, coordinates_y = v_new_y
+	WHERE client_id = v_client_id;
+END$$

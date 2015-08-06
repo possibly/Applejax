@@ -16,6 +16,7 @@
 	<body>
 		<script>
 		var socket = io();
+		var user_info = []
 		socket.on('user_info', function(info) {
 			$("#main_div").html(info)
 		});
@@ -40,9 +41,29 @@
 				$("#"+idString).html("T")
 			}
 		});
+		$(document).click(function(event){
+			var id = event.target.id
+			var x = parseInt(id.charAt(0))
+			var y = parseInt(id.charAt(1))
+			if ($("#move_select").val()=='move') {
+				var json = {}
+				json.x = x
+				json.y = y
+				json.type = 'move'
+				alert(JSON.stringify(json))
+				socket.emit('event', json)
+			} else {
+				alert($("#move_select").val())
+			}
+		})
 		</script>
 		<div id="main_div"></div>
 		<div id="time_left"></div>
+			<select id="move_select">
+				<option value="move">Move</option>
+				<option value="somethingelse">else</option>
+			</select>
+		</div>
 		<div id="board">
 			<table>
 				<tr>

@@ -11,6 +11,7 @@ var eventQue = require("./eventQue")
 var rooms = []
 var timers = []
 var clients = []
+var event_ques = []
 
 function makeString(parameter) {
 	return parameter+""
@@ -42,6 +43,8 @@ io.on('connect', function(socket) {
 		clients.push([socket.id, user_info["client_id"]])
 		sendBackInfo(socket, user_info, ["session_id", "client_id"], 'user_info')
 		var room_name = "session#"+user_info["session_id"]
+		var l = new eventQue(user_info["session_id"])
+		event_ques[room_name] = l
 		if (rooms.indexOf(room_name)==-1) {
 			rooms.push(room_name)
 			var temp_timer = timerHandler.getTimer(def_turn_time, 1000, 
@@ -51,9 +54,9 @@ io.on('connect', function(socket) {
 				function() {
 					timers[""+user_info["session_id"]].reset(def_turn_time)
 					timers[""+user_info["session_id"]].startstop()
-					var l = new eventQue()
 					var session_id = user_info["session_id"]
 					var room_name = "session#"+session_id
+					event_ques[room_name].executeQue()
 					var clients_in_room = io.sockets.adapter.rooms[room_name]
 					var connectedSockets = []
 					for (var clientId in clients_in_room) {
@@ -81,6 +84,15 @@ io.on('connect', function(socket) {
 			temp_timer.start()
 			timers[""+user_info["session_id"]] = (temp_timer)
 			populateWithTrees(user_info["session_id"])
+			console.log("Room created with session_id: "+user_info["session_id"])
+				socket.on('event', function(json) {
+					json.client_id = user_info["client_id"]
+					console.log(JSON.stringify(json))
+					var room_name = "session#"+user_info["session_id"]
+					//console.log(room_name)
+					// json needs to be validated
+					event_ques[room_name].add(json)
+				})
 		}
 		socket.join(room_name)
 	})
@@ -94,6 +106,7 @@ io.on('connect', function(socket) {
 		}
 		sqlHandler.removeClient(user_info["client_id"])
 	});
+	
 });
 
 function sendBackInfo(socket, hash, keys, event_name) {

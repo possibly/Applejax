@@ -10,6 +10,7 @@ module.exports = {
 	reportBackInfo: function(callback) {
 		
 		makeQuery("CALL count_free_sessions();", function(err, rows, fields) {
+			if (err) throw err;
 			var user_info = []
 			function returnInfo() {
 				makeQuery("CALL get_free_session();", function(err, row, fields) {
@@ -84,6 +85,27 @@ module.exports = {
 				}
 				callback(return_array)
 			})
+		})
+	},
+	
+	getClientCoordinates: function(v_client_id, callback) {
+		console.log(v_client_id)
+		makeQuery("CALL get_client_coordinates(?);", [v_client_id], function(err, rows, fields) {
+			if (err) throw err;
+			var x = rows[0][0].coordinates_x
+			var y = rows[0][0].coordinates_y
+			callback(x,y)
+		})
+	},
+	
+	moveClient: function(v_client_id, v_coords, callback) {
+		makeQuery("CALL set_client_coordinates(?, ?, ?);", [v_client_id, v_coords[0], v_coords[1]], function(err, rows, fields) {
+			if (err) throw err;
+			console.log("hi from sql handler")	
+			if (callback==undefined) {
+				console.log("it's undefined!")
+			}	
+			callback()
 		})
 	}
 }
