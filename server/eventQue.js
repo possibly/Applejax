@@ -83,6 +83,7 @@ module.exports = function(v_session_id) {
 							var newCoordinates = [currentValue.new_coordinates_x, currentValue.new_coordinates_y]
 							console.log(currentValue.client_id+" "+currentValue.new_coordinates_x+" "+currentValue.new_coordinates_y)
 							sqlHandler.moveClient(currentValue.client_id, newCoordinates, callback)
+							callback()
 							console.log("hi-in-switch")
 							break;
 						default:
