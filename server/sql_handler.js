@@ -99,13 +99,28 @@ module.exports = {
 	},
 	
 	moveClient: function(v_client_id, v_coords, callback) {
-		makeQuery("CALL set_client_coordinates(?, ?, ?);", [v_client_id, v_coords[0], v_coords[1]], function(err, rows, fields) {
+		makeQuery("SELECT session_id FROM applejax_db.clients WHERE (client_id = ?);", v_client_id, function(err, rows, fields) {
 			if (err) throw err;
-			console.log("hi from sql handler")	
-			if (callback==undefined) {
-				console.log("it's undefined!")
-			}	
-			callback()
+			console.log(v_client_id+"\n"+rows[0][0])
+			var v_session_id = rows[0][0].session_id
+			makeQuery("SELECT does_client_exist(?,?,?) as result;", v_session_id, v_coords[0], v_coords[1], function(err, rows, fields) {
+				if (err) throw err;
+				if (rows[0][0].result==0) {
+					makeQuery("SELECT count(*) as result FROM trees WHERE coordinates_x = ? AND coordinates_y = ?;", v_coords[0], v_coords[1], function(err, rows, fields) {
+						if (err) throw err;
+						if (rows[0][0].result==0) {
+							makeQuery("CALL set_client_coordinates(?, ?, ?);", [v_client_id, v_coords[0], v_coords[1]], function(err, rows, fields) {
+								if (err) throw err;
+								console.log("hi from sql handler")	
+								if (callback==undefined) {
+									console.log("it's undefined!")
+								}	
+								callback()
+							})
+						}
+					})
+				}
+			})
 		})
 	}
 }
