@@ -3,6 +3,10 @@
 var body = require('body/any');
 var xtend = require('xtend');
 
+//.post does some nice error checking.
+//If you see a route url wrapped in a post
+//function, then you know its a route
+//for POST-only!
 module.exports.post = function post (fn) {
 	return function (req, res, params) {
 		if (req.method !== 'POST') {
