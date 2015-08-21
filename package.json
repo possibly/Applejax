@@ -1,0 +1,24 @@
+{
+  "name": "Applejax",
+  "version": "1.0.0",
+  "description": "\"The game. You just lost.\"",
+  "main": "server.js",
+  "dependencies": {
+    "ecstatic": "^0.8.0",
+    "routes": "^2.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/possibly/Applejax.git"
+  },
+  "author": "Tyler Brothers <tylerbrothers1@gmail.com> (www.thetylerbrothers.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/possibly/Applejax/issues"
+  },
+  "homepage": "https://github.com/possibly/Applejax"
+}
