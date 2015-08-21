@@ -3,7 +3,10 @@ var ecstatic = require('ecstatic')(__dirname + '/static'); //serves static files
 var router = require('routes')(); //handles routing of incoming requests to controllers.
 
 //Registering some routes with our app.
+var post = require('./routes/helpers.js').post
 router.addRoute('/', require('./routes/tilde.js'));
+router.addRoute('/register/:username/:password', post(require('./routes/register.js')));
+
 
 //Create the server.
 var server = http.createServer(function (req,res) {
