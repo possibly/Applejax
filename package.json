@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "body": "^5.1.0",
+    "ecstatic": "^0.8.0",
+    "faye": "^1.1.2",
+    "routes": "^2.1.0",
+    "xtend": "^4.0.0"
+  },
+  "scripts": {
+    "client": "node npm-script-client.js",
+    "start": "echo 'Navigate to localhost:8000 since this server:' & node app/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/possibly/Applejax.git"
+  }
+}
